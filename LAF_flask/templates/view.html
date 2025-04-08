@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Items</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body class="lost-and-found">
+    <header>
+        <h1>Lost and Found Items</h1>
+        <nav>
+            <ul>
+                <li><a href="/">Home</a></li>
+                <li><a href="/view">View Items</a></li>
+                <li><a href="/report">Report Item</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <section class="items-section">
+            <h2>Currently Reported Items</h2>
+            
+            <form method="GET" action="/view" class="search-form">
+                <input type="text" name="search" placeholder="Search items..." value="{{ search }}">
+                <button type="submit">Search</button>
+            </form>
+
+            <div class="item-list">
+                {% for item in items %}
+                <div class="item">
+                    {% if item.image %}
+                    <div class="image-container">
+                        <img src="{{ item.image }}" alt="{{ item.name }}" class="item-image" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\'no-image\'>Image not available</div>'">
+                    </div>
+                    {% else %}
+                    <div class="no-image">No Image</div>
+                    {% endif %}
+                    <div class="item-details">
+                        <h3>{{ item.name }}</h3>
+                        <p><strong>Status:</strong> <span class="status-{{ item.status }}">{{ item.status|title }}</span></p>
+                        <p><strong>Category:</strong> {{ item.category|title }}</p>
+                        <p><strong>Location:</strong> {{ item.location }}</p>
+                        <p><strong>Contact:</strong> {{ item.contact }}</p>
+                        <p><strong>Description:</strong> {{ item.description }}</p>
+                        <p class="date">Reported on: {{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div class="no-items">
+                    <p>No items found. {% if search %}Try a different search term.{% else %}Be the first to report an item!{% endif %}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Lost and Found Management</p>
+    </footer>
+    <script src="/static/script.js"></script>
+</body>
+</html>
